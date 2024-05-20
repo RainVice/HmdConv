@@ -6,7 +6,7 @@ image-preview 提供图片预览组件，支持旋转，缩放和平移，提供
 
 ## 下载安装
 
-`ohpm install @rv/@rv/hmd-conv`
+`ohpm install @rv/hmd-conv`
 
 ## 权限
 
