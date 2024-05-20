@@ -1,4 +1,4 @@
-import { HmdConv } from '@rv/hmd-conv/Index';
+import { HmdConv } from '@rv/hmd-conv';
 
 @Entry
 @Component
@@ -7,83 +7,26 @@ struct Index {
 
   aboutToAppear(): void {
     this.message = new HmdConv().html2md(`
-<h1>Heading level 1</h1>
-<h2>Heading level 2</h2>
-<p>123<del>1232131</del>123</br>12</br>
-	<strong>
-		<i>34</i>
-	</strong>456
-</p>
-a<i>
-	<b>sd</b>
-</i>asd
-<blockquote>
-	<ul>
-		<li>First item
-			<ol>
-				<li>First item
-				</li>
-				<li>Second item</li>
-				<li>Third item</li>
-				<li>Fourth item</li>
-			</ol>
-		</li>
-		<li>Second item</li>
-		<li>Third item</li>
-		<li>Fourth item</li>
-	</ul>
-	<p>Dorothy
-		<h1>Heading level 1</h1>
-		<ol>
-			<li>First item</li>
-			<li>Second item</li>
-			<li>123</li>
-			<li>Third item</li>
-			<li>Fourth item</li>
-		</ol>
-		followed her through many of <blockquote>
-			<p>Dorothy followed her through many of the beautiful rooms in her castle.</p>
-		</blockquote>the beautiful rooms in her castle.
-	</p>
-</blockquote>
+<h2>项目升级AGP到8.0+</h2>
+<p>同步项目，遇到以下错误： Namespace not specified. Specify a namespace in the module's build file. See https://d.android.com/r/tools/upgrade-assistant/set-namespace for information about setting the namespace.</p>
+<p><code>解决方案</code>： 在每一个模块中，都有一个build.gradle文件和AndroidManifest.xml，现在需要做的就是把AndroidManifest.xml中package=&quot;com.aaa.bbb&quot;包名添加到模块对应的build.gradle中。每一个模块都是这样，包括主App模块。 假设AndroidManifest.xml -&gt; package=&quot;com.aaa.bbb&quot;</p>
+<pre><code class="language-c">android {
+	namespace &quot;com.aaa.bbb&quot;
+}
+</code></pre>
+<p>如果不解决namespace问题，用到的R文件也是无法生成，跨模块使用R文件各种错误。</p>
+<h2>BuildConfig无法生成，报红</h2>
+<p>AGP8+默认不生成模块的BuildConfig.java，导致之前使用该类的功能失效。开启方案是： 在模块的build.gradle中增加配置。</p>
+<pre><code class="language-c">android {
+	buildFeatures {
+        buildConfig true
+    }
+}
+</code></pre>
 
-
-<ol>
-	<li>First item
-		<ul>
-			<li>First item</li>
-			<li>Second item</li>
-			<li>Third item
-					<ol>
-			<li>First item</li>
-			<li>Second item
-			<ol>
-			<li>First item</li>
-			<li>Second item</li>
-			<li>123</li>
-			<li>Third item</li>
-			<li>Fourth item</li>
-		</ol>
-		</li>
-			<li>123</li>
-			<li>Third item</li>
-			<li>Fourth item</li>
-		</ol>
-			</li>
-			<li>Fourth item
-			<blockquote>
-			<p>Dorothy followed her through many of the beautiful rooms in her castle.</p>
-			<p>Dorothy followed her through many of the beautiful rooms in her castle.</p>
-		</blockquote>
-			</li>
-		</ul>
-		123456
-	</li>
-	<li>Second item</li>
-	<li>Third item</li>
-	<li>Fourth item</li>
-</ol>
 `)
+    const aaa = this.message.toString()
+    return
   }
 
   build() {

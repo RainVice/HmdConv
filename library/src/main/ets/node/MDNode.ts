@@ -1,11 +1,28 @@
 import { DomUtils } from '@ohos/htmlparser2'
-import { ChildNode, Element, Text } from 'domhandler'
+import { ChildNode } from 'domhandler'
 import { blockquote, bold,
   check,
-  deleteLine, header, italic, lineBreak,
+  code,
+  definitionDescription,
+  definitionTerm,
+  deleteLine,
+  descriptionList,
+  divider,
+  header,
+  image,
+  italic, lineBreak,
+  link,
   listItem,
   orderedList,
-  paragraph, root, text,
+  paragraph,
+  preformatted,
+  root,
+  tableBody,
+  tableDataCell,
+  tableHeader,
+  tableHeaderCell,
+  tableRowCell,
+  text,
   unorderedList } from '../plugins'
 
 export class MDNode {
@@ -24,7 +41,7 @@ export class MDNode {
     }
     else if (htmlNode.type === "tag") {
       if (htmlNode.name === "input") {
-        mdNode.mdType = htmlTagMap[htmlNode.attribs['class']]
+        mdNode.mdType = htmlTagMap[htmlNode.attribs['type']]
       }
       else {
         mdNode.mdType = htmlTagMap[htmlNode.name]
@@ -38,7 +55,7 @@ export class MDNode {
   }
 
   outputMd(): string {
-    const action = outputRules[this.mdType](this)
+    const action = !!outputRules[this.mdType] ? outputRules[this.mdType](this) : (text: string):string => text
     let text = ''
     this.childNode.forEach((item: MDNode, index: number) => {
       text += item.outputMd()
@@ -164,7 +181,7 @@ const htmlTagMap: { [key: string]: MDType } = {
   'ul': MDType.UnorderedList,
   'ol': MDType.OrderedList,
   'li': MDType.ListItem,
-  'check': MDType.Check,
+  'checkbox': MDType.Check,
 
   // 'a' 标签在 Markdown 中通常表示链接，但 HTML 中可以有不同的语义，这里假设它映射到 Link
   'a': MDType.Link,
@@ -207,4 +224,19 @@ const outputRules: { [key: string]: (mdNode: MDNode) => (text: string) => string
   [MDType.OrderedList]: orderedList,
   [MDType.ListItem]: listItem,
   [MDType.Check]: check,
+  [MDType.Link]: link,
+  [MDType.Code]: code,
+  [MDType.Preformatted]: preformatted,
+  [MDType.Divider]: divider,
+  [MDType.Image]: image,
+  [MDType.TableDataCell]: tableDataCell,
+  [MDType.TableRowCell]: tableRowCell,
+  [MDType.TableBody]: tableBody,
+  [MDType.TableHeaderCell]: tableHeaderCell,
+  [MDType.TableHeader]: tableHeader,
+  [MDType.DefinitionTerm]: definitionTerm,
+  [MDType.DefinitionDescription]: definitionDescription,
+  [MDType.DescriptionList]: descriptionList,
+
+
 }
