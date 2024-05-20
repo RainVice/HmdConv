@@ -1,6 +1,12 @@
 import { DomUtils } from '@ohos/htmlparser2'
 import { ChildNode, Element, Text } from 'domhandler'
-import { bold, deleteLine, header, italic, lineBreak, paragraph, root, text } from '../plugins'
+import { blockquote, bold,
+  check,
+  deleteLine, header, italic, lineBreak,
+  listItem,
+  orderedList,
+  paragraph, root, text,
+  unorderedList } from '../plugins'
 
 export class MDNode {
   private htmlNode: ChildNode
@@ -196,4 +202,9 @@ const outputRules: { [key: string]: (mdNode: MDNode) => (text: string) => string
   [MDType.LineBreak]: lineBreak,
   [MDType.Bold]: bold,
   [MDType.Italic]: italic,
+  [MDType.Quote]: blockquote,
+  [MDType.UnorderedList]: unorderedList,
+  [MDType.OrderedList]: orderedList,
+  [MDType.ListItem]: listItem,
+  [MDType.Check]: check,
 }
