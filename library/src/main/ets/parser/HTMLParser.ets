@@ -3,7 +3,7 @@ import { ChildNode } from 'domhandler'
 import { MDNode } from '../node'
 
 
-export class HTMLParser{
+export class HTMLParser {
   private dom: Document
   private mdNode: MDNode
 
@@ -12,24 +12,18 @@ export class HTMLParser{
     this.mdNode = MDNode.createForHtml(this.dom)
   }
 
-  traverseDOM(childNode: ChildNode, _mdNode: MDNode){
+  traverseDOM(childNode: ChildNode, _mdNode: MDNode) {
     const temp = MDNode.createForHtml(childNode)
     _mdNode.pushNode(temp)
     if (DomUtils.hasChildren(childNode)) {
-      childNode.children.forEach((item: ChildNode,index:number) => {
-        this.traverseDOM(item,temp)
+      childNode.children.forEach((item: ChildNode, index: number) => {
+        this.traverseDOM(item, temp)
       })
     }
   }
 
-
-
-  start() : string{
-    this.traverseDOM(this.dom,this.mdNode)
-    const aaa: string = this.mdNode.outputMd()
-    return aaa
+  start(): string {
+    this.traverseDOM(this.dom, this.mdNode)
+    return this.mdNode.outputMd()
   }
-
-
-
 }

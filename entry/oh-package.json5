@@ -6,7 +6,10 @@
   "author": "",
   "license": "",
   "dependencies": {
-    '@rv/hmd-conv': 'file:../library',
-  }
+    "@rv/hmd-conv": "file:../library",
+    "@luvi/lv-markdown-in": "^1.1.1",
+    "@hcs/biu-markdown": "^1.0.2"
+  },
+  "devDependencies": {},
+  "dynamicDependencies": {}
 }
-

@@ -98,7 +98,7 @@ export const code = (mdNode: MDNode): (text: string) => string => {
 
 export const preformatted = (mdNode: MDNode): (text: string) => string => {
   const lang = (mdNode.html() as Element).attribs["data-lang"] ||
-  DomUtils.getElementsByTagName('code', mdNode.html())[0].attribs["class"].split('-')[1] ||
+  DomUtils.getElementsByTagName('code', mdNode.html())[0].attribs["class"]?.split('-')[1] ||
     ""
   return (text: string) =>
   '```' + lang + '\n' + text.replace(/^`|`$/g, '') + '\n```'
@@ -126,6 +126,7 @@ export const tableDataCell = (mdNode: MDNode): (text: string) => string => {
 export const tableHeaderCell = (mdNode: MDNode): (text: string) => string => {
   return (text: string) => ` ${text} `
 }
+
 export const tableHeader = (mdNode: MDNode): (text: string) => string => {
   return (text: string) => text.replace(/^(?!\s*$).*$/gm, "|$&|")
 }
@@ -143,16 +144,14 @@ export const tableBody = (mdNode: MDNode): (text: string) => string => {
 }
 
 
-
 export const definitionTerm = (mdNode: MDNode): (text: string) => string => {
-  return (text: string) =>'\n'+  text
+  return (text: string) => '\n' + text
 }
 
 
 export const definitionDescription = (mdNode: MDNode): (text: string) => string => {
-  return (text: string) => '\n'+ `: ${text}` + '\n'
+  return (text: string) => '\n' + `: ${text}` + '\n'
 }
-
 
 
 export const descriptionList = (mdNode: MDNode): (text: string) => string => {
