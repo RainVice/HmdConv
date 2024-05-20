@@ -5,7 +5,7 @@
   "main": "Index.ets",
   "author": "rainvice",
   "repository": "https://gitee.com/MUYS/hmd-conv",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "dependencies": {
     "@ohos/htmlparser2": "^1.0.0",
     "domhandler": "^5.0.3"
