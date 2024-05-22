@@ -1,6 +1,7 @@
 import { Document, DomUtils, parseDocument } from '@ohos/htmlparser2'
 import { ChildNode, Element, Text } from 'domhandler'
 import { md } from '../Markdown'
+import { render } from 'dom-serializer'
 
 
 export class HTMLParser {
@@ -12,6 +13,11 @@ export class HTMLParser {
   }
 
   private traverseDOM(childNode: ChildNode, node: md.Node): md.Node {
+
+    if (childNode.type === "text" && childNode.data === '\n') {
+      return
+    }
+
     const temp = this.createNode(childNode)
     node?.appendChild(temp)
     if (DomUtils.hasChildren(childNode)) {
@@ -35,6 +41,7 @@ export class HTMLParser {
     else {
       action = htmlToMdom[childNode.type]
     }
+
     return action ? action(childNode) : new md.Document()
   }
 
@@ -48,6 +55,9 @@ export class HTMLParser {
 // 创建一个映射对象，将HTML标签映射成 Markdown Dom 对象
 const htmlToMdom: { [key: string]: (childNode: ChildNode) => md.Node } = {
   'root': (childNode: ChildNode): md.Document => new md.Document(),
+  'figure': (childNode: ChildNode): md.Document => new md.Document(),
+  'div': (childNode: ChildNode): md.HTML => new md.HTML(render(childNode)),
+  'span': (childNode: ChildNode): md.HTML => new md.HTML(render(childNode)),
   'h1': (childNode: ChildNode): md.Header => new md.Header(1, (childNode as Element).attribs['id']),
   'h2': (childNode: ChildNode): md.Header => new md.Header(2, (childNode as Element).attribs['id']),
   'h3': (childNode: ChildNode): md.Header => new md.Header(3, (childNode as Element).attribs['id']),

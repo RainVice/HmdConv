@@ -15,7 +15,7 @@ export enum Type {
   CodeBlock = 'codeBlock', // 代码块
   Divider = 'divider', // 分割线
   Link = 'link', // 超链接
-  LinkQuote = 'linkQuote', // 连接引用
+  // LinkQuote = 'linkQuote', // 连接引用
   Image = 'image', // 图片
   HTML = 'html', // 内嵌 html
   Table = 'table', // 表格
@@ -74,7 +74,7 @@ export abstract class Node {
    *
    * @param text 便签内未解析的文本
    */
-  constructor(text: string | null = null) {
+  constructor(text: string = null) {
     this.text = text
   }
 
@@ -84,11 +84,11 @@ export abstract class Node {
   }
 
   toText(): string {
-    return this.children.map(item => item.toText()).join('\n\n')
+    return this.itemText('\n\n')
   }
 
-  protected itemText(): string {
-    return this.children.map(item => item.toText()).join()
+  protected itemText(str: string = ''): string {
+    return this.children.map(item => item.toText()).join(str)
   }
 }
 
@@ -122,7 +122,7 @@ export class Header extends Node {
   }
 
   toText(): string {
-    return `${"#".repeat(this.attributes["level"] as number)} ${this.itemText()} {#${this.attributes['id'] || ""}}`
+    return `${"#".repeat(this.attributes["level"] as number)} ${this.itemText()}  ${ this.attributes['id'] ? `{#${this.attributes['id']}}` : "" }`
   }
 }
 
@@ -174,7 +174,6 @@ export class Quote extends Node {
   }
 }
 
-// todo toText
 export class List extends Node {
   type: Type = Type.List
   listType: ListType = ListType.Order
@@ -183,11 +182,23 @@ export class List extends Node {
     super(text)
     this.listType = listType
   }
+
+  toText(): string {
+    if (ListType.Order) {
+      let num: number = 1
+      return this.children.map(item => `${num++}. ${item}`).join('\n')
+    }else{
+      return this.children.map(item => `- ${item}`).join('\n')
+    }
+  }
+
 }
 
-// todo toText
 export class ListItem extends Node {
   type: Type = Type.ListItem
+  toText(): string {
+    return this.itemText().split('\n').map((line, index) => index ? `    ${line}` : line).join('\n')
+  }
 }
 
 export class InlineCode extends Node {
@@ -225,9 +236,6 @@ export class Divider extends Node {
 
 }
 
-/**
- * todo link 中可以使用行内代码以及图片
- */
 export class Link extends Node {
   type: Type = Type.Link
   linkType: LinkType = LinkType.Default
@@ -248,22 +256,15 @@ export class Link extends Node {
     this.attributes['title'] = title
     this.linkType = linkType
   }
-}
 
-export class LinkQuote extends Node {
-  type: Type = Type.LinkQuote
 
-  /**
-   *
-   * @param url url 地址
-   * @param tag 引用名
-   * @param title 标题
-   */
-  constructor(url: string, tag: string, title: string) {
-    super(null)
-    this.attributes['url'] = url
-    this.attributes['tag'] = tag
-    this.attributes['title'] = title
+  toText(): string {
+    if (this.itemText()) {
+      return `[${this.itemText()}](${this.attributes['url']} "${this.attributes['title'] || ""}")`
+    }
+    else{
+      return `<${this.attributes['url']}>`
+    }
   }
 }
 
@@ -277,37 +278,70 @@ export class Image extends Node {
     this.attributes['name'] = name
     this.attributes['title'] = title
   }
+
+  toText(): string {
+    // ![这是图片](/assets/img/philly-magic-garden.jpg "Magic Gardens")
+    return `![${this.attributes['name']}](${this.attributes['url']} "${this.attributes['title'] || ''}")`
+  }
 }
 
 export class HTML extends Node {
   type: Type = Type.HTML
+
+  toText(): string {
+    return this.text
+  }
+
 }
 
-
+// todo 对齐
 export class Table extends Node {
   type: Type = Type.Table
+  toText(): string {
+    return this.itemText("\n")
+  }
 }
 
 export class TableHeader extends Node {
   type: Type = Type.TableHeader
+  toText(): string {
+    const title  = `| ${this.itemText()} |`
+    const dir = title.replace(/[^|]+/g, ' --- ')
+    return `${title}\n${dir}`
+  }
 }
 
 
 export class TableBody extends Node {
   type: Type = Type.TableBody
+  toText(): string {
+    return this.itemText('\n').split('\n').map(line => `| ${line} |`).join('\n');
+  }
+
 }
 
 export class TableRow extends Node {
   type: Type = Type.TableRow
+
+  toText(): string {
+    return this.itemText(" | ")
+  }
+
 }
 
 export class TableData extends Node {
   type: Type = Type.TableData
+  toText(): string {
+    return this.itemText()
+  }
 }
 
 
 export class DeleteLine extends Node {
   type: Type = Type.DeleteLine
+  toText(): string {
+    return `~~${this.itemText()}~~`
+  }
 }
 
 export class Task extends Node {
