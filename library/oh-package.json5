@@ -8,7 +8,8 @@
   "license": "MIT",
   "dependencies": {
     "@ohos/htmlparser2": "^1.0.0",
-    "domhandler": "^5.0.3"
+    "domhandler": "^5.0.3",
+    "dom-serializer": "^2.0.0"
   },
   "devDependencies": {},
   "dynamicDependencies": {}
