@@ -1,10 +1,10 @@
 {
   "name": "@rv/hmd-conv",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "将 html 转换成 markdown 语法",
   "main": "Index.ets",
   "author": "rainvice",
-  "repository": "https://gitee.com/MUYS/hmd-conv",
+  "repository": "https://gitee.com/MUYS/HmdConv",
   "license": "MIT",
   "dependencies": {
     "@ohos/htmlparser2": "^1.0.0",
