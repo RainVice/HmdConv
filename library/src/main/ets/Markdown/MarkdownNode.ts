@@ -103,7 +103,7 @@ export class Text extends Node {
   type: Type = Type.Text
 
   toText(): string {
-    return this.text
+    return this.text?.trim()
   }
 }
 
@@ -122,7 +122,7 @@ export class Header extends Node {
   }
 
   toText(): string {
-    return `${"#".repeat(this.attributes["level"] as number)} ${this.itemText()}  ${ this.attributes['id'] ? `{#${this.attributes['id']}}` : "" }`
+    return `${"#".repeat(this.attributes["level"] as number)} ${this.itemText()}  ${this.attributes['id'] ? `{#${this.attributes['id']}}` : ""}`
   }
 }
 
@@ -184,20 +184,34 @@ export class List extends Node {
   }
 
   toText(): string {
-    if (ListType.Order) {
+    if (this.listType === ListType.Order) {
       let num: number = 1
-      return this.children.map(item => `${num++}. ${item}`).join('\n')
-    }else{
-      return this.children.map(item => `- ${item}`).join('\n')
+      return '\n' + this.children.map(item => {
+        if (item.type === Type.ListItem) {
+          return `${num++}. ${item.toText()}`
+        } else {
+          return item.toText()
+        }
+      }).join('\n')
+    }
+    else {
+      return '\n' + this.children.map(item => {
+        if (item.type === Type.ListItem) {
+          return `- ${item.toText()}`
+        } else {
+          return item.toText()
+        }
+      }).join('\n')
+
     }
   }
-
 }
 
 export class ListItem extends Node {
   type: Type = Type.ListItem
+
   toText(): string {
-    return this.itemText().split('\n').map((line, index) => index ? `    ${line}` : line).join('\n')
+    return this.itemText().split('\n').map((line, index) => index ? `  ${line}` : line).join('\n')
   }
 }
 
@@ -233,7 +247,6 @@ export class Divider extends Node {
   toText(): string {
     return '---'
   }
-
 }
 
 export class Link extends Node {
@@ -262,7 +275,7 @@ export class Link extends Node {
     if (this.itemText()) {
       return `[${this.itemText()}](${this.attributes['url']} "${this.attributes['title'] || ""}")`
     }
-    else{
+    else {
       return `<${this.attributes['url']}>`
     }
   }
@@ -291,12 +304,12 @@ export class HTML extends Node {
   toText(): string {
     return this.text
   }
-
 }
 
 // todo 对齐
 export class Table extends Node {
   type: Type = Type.Table
+
   toText(): string {
     return this.itemText("\n")
   }
@@ -304,8 +317,9 @@ export class Table extends Node {
 
 export class TableHeader extends Node {
   type: Type = Type.TableHeader
+
   toText(): string {
-    const title  = `| ${this.itemText()} |`
+    const title = `| ${this.itemText()} |`
     const dir = title.replace(/[^|]+/g, ' --- ')
     return `${title}\n${dir}`
   }
@@ -314,10 +328,10 @@ export class TableHeader extends Node {
 
 export class TableBody extends Node {
   type: Type = Type.TableBody
+
   toText(): string {
     return this.itemText('\n').split('\n').map(line => `| ${line} |`).join('\n');
   }
-
 }
 
 export class TableRow extends Node {
@@ -326,11 +340,11 @@ export class TableRow extends Node {
   toText(): string {
     return this.itemText(" | ")
   }
-
 }
 
 export class TableData extends Node {
   type: Type = Type.TableData
+
   toText(): string {
     return this.itemText()
   }
@@ -339,6 +353,7 @@ export class TableData extends Node {
 
 export class DeleteLine extends Node {
   type: Type = Type.DeleteLine
+
   toText(): string {
     return `~~${this.itemText()}~~`
   }
@@ -352,14 +367,16 @@ export class Task extends Node {
     super(text)
     this.checked = checked
   }
+
+  toText(): string {
+    return `- [${this.checked? 'x' : ' '}] ${this.itemText()}`
+  }
+
 }
 
 
 // ————————————————————————————
-// todo 脚注
 // todo 定义列表
-// todo 使用 Emoji 表情
-// todo 自动网址链接
 // todo 转义字符语法
 // ————————————————————————————
 

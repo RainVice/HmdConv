@@ -14,15 +14,14 @@ export class HTMLParser {
 
   private traverseDOM(childNode: ChildNode, node: md.Node): md.Node {
 
-    if (childNode.type === "text" && childNode.data === '\n') {
-      return
-    }
 
     const temp = this.createNode(childNode)
     node?.appendChild(temp)
     if (DomUtils.hasChildren(childNode)) {
       childNode.children.forEach((item: ChildNode, index: number) => {
-        this.traverseDOM(item, temp)
+        if (!(item.type === "text" && item.data === '\n')) {
+          this.traverseDOM(item, temp)
+        }
       })
     }
     return temp
