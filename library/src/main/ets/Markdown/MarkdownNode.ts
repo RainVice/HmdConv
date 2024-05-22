@@ -19,8 +19,12 @@ export enum Type {
   Image = 'image', // 图片
   HTML = 'html', // 内嵌 html
   Table = 'table', // 表格
+  TableHeader = 'tableHeader', // 表格头
+  TableBody = 'tableBody', // 表格体
+  TableRow = 'tableRow', // 表格行
+  TableData = 'tableData', // 表格数据
   DeleteLine = 'deleteLine', // 删除线
-  TaskList = 'taskList', // 任务列表
+  Task = 'task', // 任务列表
 }
 
 
@@ -62,7 +66,7 @@ export type Level = 1 | 2 | 3 | 4 | 5 | 6
 export abstract class Node {
   type: Type;
   children: Node[] = [];
-  attributes?: { [name: string]: string | number }
+  attributes?: { [name: string]: string | number | null } = {}
   text?: string
   parent?: Node
 
@@ -70,7 +74,7 @@ export abstract class Node {
    *
    * @param text 便签内未解析的文本
    */
-  constructor(text: string) {
+  constructor(text: string | null = null) {
     this.text = text
   }
 
@@ -81,6 +85,10 @@ export abstract class Node {
 
   toText(): string {
     return this.children.map(item => item.toText()).join('\n\n')
+  }
+
+  protected itemText(): string {
+    return this.children.map(item => item.toText()).join()
   }
 }
 
@@ -93,6 +101,10 @@ export class Document extends Node {
 
 export class Text extends Node {
   type: Type = Type.Text
+
+  toText(): string {
+    return this.text
+  }
 }
 
 export class Header extends Node {
@@ -103,20 +115,32 @@ export class Header extends Node {
    * @param text 标签内未解析的文本
    * @param level 标题等级
    */
-  constructor(text: string, level: Level, id: string = null) {
+  constructor(level: Level, id: string = null, text: string = null) {
     super(text)
     this.attributes['level'] = level
     this.attributes['id'] = id
+  }
+
+  toText(): string {
+    return `${"#".repeat(this.attributes["level"] as number)} ${this.itemText()} {#${this.attributes['id'] || ""}}`
   }
 }
 
 export class Paragraph extends Node {
   type: Type = Type.Paragraph
+
+  toText(): string {
+    return this.itemText()
+  }
 }
 
 
 export class LineBreak extends Node {
   type: Type = Type.LineBreak
+
+  toText(): string {
+    return '\n'
+  }
 }
 
 export class Emphasis extends Node {
@@ -127,49 +151,78 @@ export class Emphasis extends Node {
     super(text);
     this.emphasisType = emphasisTypes
   }
+
+  toText(): string {
+    let text = this.itemText()
+    this.emphasisType.forEach((emp: EmphasisType, index: number) => {
+      if (emp === EmphasisType.Bold) {
+        text = `**${text}**`
+      }
+      else {
+        text = `*${text}*`
+      }
+    })
+    return text
+  }
 }
 
 export class Quote extends Node {
   type: Type = Type.Quote
+
+  toText(): string {
+    return this.itemText().replace(/^/gm, '> ')
+  }
 }
 
+// todo toText
 export class List extends Node {
   type: Type = Type.List
   listType: ListType = ListType.Order
-  children: ListItem[] = []
 
-  constructor(text: string, listType: ListType) {
+  constructor(listType: ListType, text: string = null) {
     super(text)
     this.listType = listType
   }
-
-  appendChild(child: ListItem): void {
-    child.parent = this
-    this.children.push(child)
-  }
 }
 
+// todo toText
 export class ListItem extends Node {
   type: Type = Type.ListItem
 }
 
 export class InlineCode extends Node {
   type: Type = Type.InlineCode
+
+  toText(): string {
+    const text = this.itemText()
+    return /`(.*?)`/g.test(text.replace(/^`|`$/g, '')) ?
+      '``' + text.replace(/^`|`$/g, '') + '``' :
+      '`' + text.replace(/^`|`$/g, '') + '`'
+  }
 }
 
 
 export class CodeBlock extends Node {
   type: Type = Type.CodeBlock
 
-  constructor(text: string, langd: string) {
+  constructor(lang: string, text: string = null) {
     super(text)
-    this.attributes['langd'] = langd
+    this.attributes['lang'] = lang
+  }
+
+  toText(): string {
+    return '```' + this.attributes['lang'] + '\n' + this.itemText().replace(/^`|`$/g, '') + '\n```'
   }
 }
 
 
 export class Divider extends Node {
   type: Type = Type.Divider
+
+  toText(): string {
+    return '---'
+  }
+
 }
 
 /**
@@ -178,9 +231,9 @@ export class Divider extends Node {
 export class Link extends Node {
   type: Type = Type.Link
   linkType: LinkType = LinkType.Default
-  url: string = ''
-  name: string = ''
-  title: string = ''
+
+  // url: string = ''
+  // title: string = ''
 
   /**
    *
@@ -189,10 +242,9 @@ export class Link extends Node {
    * @param title
    * @param linkType
    */
-  constructor(url: string, name: string, title: string, linkType: LinkType = LinkType.Default) {
+  constructor(url: string, title: string, linkType: LinkType = LinkType.Default) {
     super(null)
     this.attributes['url'] = url
-    this.attributes['name'] = name
     this.attributes['title'] = title
     this.linkType = linkType
   }
@@ -234,36 +286,36 @@ export class HTML extends Node {
 
 export class Table extends Node {
   type: Type = Type.Table
-  header: Paragraph[] = []
-  layout: TableLayout[] = []
-  body: Paragraph[][] = []
-
-  constructor(header: Paragraph[], layout: TableLayout[], body: Paragraph[][]) {
-    super(null)
-    this.header = header
-    this.layout = layout
-    this.body = body
-  }
-
-  appendRow(...row: Paragraph[]) {
-    this.body.push(row)
-  }
 }
 
+export class TableHeader extends Node {
+  type: Type = Type.TableHeader
+}
+
+
+export class TableBody extends Node {
+  type: Type = Type.TableBody
+}
+
+export class TableRow extends Node {
+  type: Type = Type.TableRow
+}
+
+export class TableData extends Node {
+  type: Type = Type.TableData
+}
 
 
 export class DeleteLine extends Node {
   type: Type = Type.DeleteLine
 }
 
-export class TaskList extends Node {
-  type: Type = Type.TaskList
-  item: string[] = []
-  checked: number[] = []
+export class Task extends Node {
+  type: Type = Type.Task
+  checked: boolean = false
 
-  constructor(item: string[], checked: number[]) {
-    super(null)
-    this.item = item
+  constructor(checked: boolean, text: string = null) {
+    super(text)
     this.checked = checked
   }
 }
