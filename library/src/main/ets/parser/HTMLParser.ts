@@ -10,6 +10,7 @@ export class HTMLParser {
 
   constructor(html: string) {
     this.dom = parseDocument(html)
+    this.mdom = this.traverseDOM(this.dom, this.mdom)
   }
 
   private traverseDOM(childNode: ChildNode, node: md.Node): md.Node {
@@ -44,8 +45,7 @@ export class HTMLParser {
     return action ? action(childNode) : new md.Document()
   }
 
-  start(): string {
-    this.mdom = this.traverseDOM(this.dom, this.mdom)
+  getMdText(): string {
     return this.mdom.toText()
   }
 }
