@@ -1,10 +1,11 @@
+import { Option } from './option'
 import { HTMLParser } from './parser'
 
 export class HmdConv {
 
-  html2md(input: string): string {
-    const html = new HTMLParser(input)
-    return html.start()
+  html2md(input: string,option: Option): string {
+    const html = new HTMLParser(input,option)
+    return html.getMdText()
   }
 
 
@@ -16,3 +17,4 @@ export class HmdConv {
 }
 
 export * from './parser'
+export * from './option'

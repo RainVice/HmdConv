@@ -1,6 +1,8 @@
 /**
  * 定义Markdown节点类型的枚举
  */
+import { Option } from '../option';
+
 export enum Type {
   Document = 'document', // 文档
   Text = 'text', // 文本
@@ -69,6 +71,7 @@ export abstract class Node {
   attributes?: { [name: string]: string | number | null } = {}
   text?: string
   parent?: Node
+  option: Option
 
   /**
    *
@@ -211,7 +214,7 @@ export class ListItem extends Node {
   type: Type = Type.ListItem
 
   toText(): string {
-    return this.itemText().split('\n').map((line, index) => index ? `  ${line}` : line).join('\n')
+    return this.itemText().split('\n').map((line, index) => index ? `${this.option?.indent ? " ".repeat(this.option.indent) : '\t' }${line}` : line).join('\n')
   }
 }
 

@@ -1,14 +1,17 @@
 import { Document, DomUtils, parseDocument } from '@ohos/htmlparser2'
 import { ChildNode, Element, Text } from 'domhandler'
 import { md } from '../Markdown'
+import { Option } from '../option'
 import { render } from 'dom-serializer'
 
 
 export class HTMLParser {
   private dom: Document
   private mdom: md.Document
+  private option: Option
 
-  constructor(html: string) {
+  constructor(html: string, option: Option) {
+    this.option = option
     this.dom = parseDocument(html)
     this.mdom = this.traverseDOM(this.dom, this.mdom)
   }
@@ -41,8 +44,9 @@ export class HTMLParser {
     else {
       action = htmlToMdom[childNode.type]
     }
-
-    return action ? action(childNode) : new md.Document()
+    const node: md.Node = action ? action(childNode) : new md.Document()
+    node.option = this.option
+    return node
   }
 
   getMdText(): string {
