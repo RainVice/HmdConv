@@ -142,7 +142,7 @@ export class LineBreak extends Node {
   type: Type = Type.LineBreak
 
   toText(): string {
-    return '\n'
+    return '</br>'
   }
 }
 
@@ -214,7 +214,7 @@ export class ListItem extends Node {
   type: Type = Type.ListItem
 
   toText(): string {
-    return this.itemText().split('\n').map((line, index) => index ? `${this.option?.indent ? " ".repeat(this.option.indent) : '\t' }${line}` : line).join('\n')
+    return this.itemText().split('\n').map((line, index) => index ? `    ${line}` : line).join('\n')
   }
 }
 

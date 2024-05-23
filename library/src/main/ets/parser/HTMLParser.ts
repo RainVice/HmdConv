@@ -10,7 +10,7 @@ export class HTMLParser {
   private mdom: md.Document
   private option: Option
 
-  constructor(html: string, option: Option) {
+  constructor(html: string, option: Option = null) {
     this.option = option
     this.dom = parseDocument(html)
     this.mdom = this.traverseDOM(this.dom, this.mdom)
