@@ -1,19 +1,21 @@
 /**
  * 定义Markdown节点类型的枚举
  */
+
 export enum Type {
   Document = 'document', // 文档
+  Space = 'space', // 文档
   Text = 'text', // 文本
   Header = 'header', // 标题
   Paragraph = 'paragraph', // 段落
   LineBreak = 'lineBreak', // 换行
   Emphasis = 'emphasis', // 强调
-  Quote = 'quote', // 引用
+  Blockquote = 'blockquote', // 引用
   List = 'list', // 列表
   ListItem = 'listItem', // 列表子项
-  InlineCode = 'inlineCode', // 行内代码
-  CodeBlock = 'codeBlock', // 代码块
-  Divider = 'divider', // 分割线
+  Code = 'code', // 行内代码
+  FencedCodeBlock = 'fencedCodeBlock', // 代码块
+  HorizontalRule = 'horizontalRule', // 分割线
   Link = 'link', // 超链接
   // LinkQuote = 'linkQuote', // 连接引用
   Image = 'image', // 图片
@@ -23,8 +25,8 @@ export enum Type {
   TableBody = 'tableBody', // 表格体
   TableRow = 'tableRow', // 表格行
   TableData = 'tableData', // 表格数据
-  DeleteLine = 'deleteLine', // 删除线
-  Task = 'task', // 任务列表
+  Strikethrough = 'strikethrough', // 删除线
+  TaskList = 'taskList', // 任务列表
 }
 
 
@@ -35,8 +37,8 @@ export enum EmphasisType {
 
 
 export enum ListType {
-  Order = "order",
-  UnOrder = "unOrder"
+  OrderedList = "orderedList",
+  UnorderedList = "unorderedList"
 }
 
 export enum LinkType {
@@ -98,6 +100,12 @@ export abstract class Node {
 export class Document extends Node {
   type: Type = Type.Document
 }
+/**
+ * 空行
+ */
+export class Space extends Node {
+  type: Type = Type.Space
+}
 
 export class Text extends Node {
   type: Type = Type.Text
@@ -139,7 +147,7 @@ export class LineBreak extends Node {
   type: Type = Type.LineBreak
 
   toText(): string {
-    return '\n'
+    return '</br>'
   }
 }
 
@@ -167,7 +175,7 @@ export class Emphasis extends Node {
 }
 
 export class Quote extends Node {
-  type: Type = Type.Quote
+  type: Type = Type.Blockquote
 
   toText(): string {
     return this.itemText().replace(/^/gm, '> ')
@@ -176,7 +184,7 @@ export class Quote extends Node {
 
 export class List extends Node {
   type: Type = Type.List
-  listType: ListType = ListType.Order
+  listType: ListType = ListType.OrderedList
 
   constructor(listType: ListType, text: string = null) {
     super(text)
@@ -184,7 +192,7 @@ export class List extends Node {
   }
 
   toText(): string {
-    if (this.listType === ListType.Order) {
+    if (this.listType === ListType.OrderedList) {
       let num: number = 1
       return '\n' + this.children.map(item => {
         if (item.type === Type.ListItem) {
@@ -211,12 +219,12 @@ export class ListItem extends Node {
   type: Type = Type.ListItem
 
   toText(): string {
-    return this.itemText().split('\n').map((line, index) => index ? `  ${line}` : line).join('\n')
+    return this.itemText().split('\n').map((line, index) => index ? `    ${line}` : line).join('\n')
   }
 }
 
 export class InlineCode extends Node {
-  type: Type = Type.InlineCode
+  type: Type = Type.Code
 
   toText(): string {
     const text = this.itemText()
@@ -228,7 +236,7 @@ export class InlineCode extends Node {
 
 
 export class CodeBlock extends Node {
-  type: Type = Type.CodeBlock
+  type: Type = Type.FencedCodeBlock
 
   constructor(lang: string, text: string = null) {
     super(text)
@@ -242,7 +250,7 @@ export class CodeBlock extends Node {
 
 
 export class Divider extends Node {
-  type: Type = Type.Divider
+  type: Type = Type.HorizontalRule
 
   toText(): string {
     return '---'
@@ -352,7 +360,7 @@ export class TableData extends Node {
 
 
 export class DeleteLine extends Node {
-  type: Type = Type.DeleteLine
+  type: Type = Type.Strikethrough
 
   toText(): string {
     return `~~${this.itemText()}~~`
@@ -360,7 +368,7 @@ export class DeleteLine extends Node {
 }
 
 export class Task extends Node {
-  type: Type = Type.Task
+  type: Type = Type.TaskList
   checked: boolean = false
 
   constructor(checked: boolean, text: string = null) {
@@ -376,8 +384,14 @@ export class Task extends Node {
 
 
 // ————————————————————————————
-// todo 定义列表
-// todo 转义字符语法
+// todo 标题其他形式 Alternate Syntax
+// todo 定义列表 Definition List
+// todo 转义字符语法 Escaping Characters
+// todo 脚注 Footnote
+// todo 表情 Emoji
+// todo 高亮 Highlight
+// todo 下标 Subscript
+// todo 上标 Superscript
 // ————————————————————————————
 
 

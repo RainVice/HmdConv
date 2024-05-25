@@ -35,6 +35,10 @@
     {
       "name": "library",
       "srcPath": "./library",
+    },
+    {
+      "name": "marked",
+      "srcPath": "./marked",
     }
   ]
 }

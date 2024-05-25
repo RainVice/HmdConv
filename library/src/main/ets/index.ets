@@ -1,18 +1,11 @@
+
 import { HTMLParser } from './parser'
 
 export class HmdConv {
-
   html2md(input: string): string {
     const html = new HTMLParser(input)
-    return html.start()
+    return html.getMdText()
   }
-
-
-  // md2html(md: string){
-  //
-  // }
-
-
 }
 
 export * from './parser'
