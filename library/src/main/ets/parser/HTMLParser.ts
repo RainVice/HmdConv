@@ -1,17 +1,14 @@
 import { Document, DomUtils, parseDocument } from '@ohos/htmlparser2'
 import { ChildNode, Element, Text } from 'domhandler'
 import { md } from '../Markdown'
-import { Option } from '../option'
 import { render } from 'dom-serializer'
 
 
 export class HTMLParser {
   private dom: Document
   private mdom: md.Document
-  private option: Option
 
-  constructor(html: string, option: Option = null) {
-    this.option = option
+  constructor(html: string) {
     this.dom = parseDocument(html)
     this.mdom = this.traverseDOM(this.dom, this.mdom)
   }
@@ -45,7 +42,6 @@ export class HTMLParser {
       action = htmlToMdom[childNode.type]
     }
     const node: md.Node = action ? action(childNode) : new md.Document()
-    node.option = this.option
     return node
   }
 
@@ -77,8 +73,8 @@ const htmlToMdom: { [key: string]: (childNode: ChildNode) => md.Node } = {
   'i': (childNode: ChildNode): md.Emphasis => new md.Emphasis(null, md.EmphasisType.Italic),
   'em': (childNode: ChildNode): md.Emphasis => new md.Emphasis(null, md.EmphasisType.Italic),
   'blockquote': (childNode: ChildNode): md.Quote => new md.Quote(),
-  'ul': (childNode: ChildNode): md.List => new md.List(md.ListType.UnOrder),
-  'ol': (childNode: ChildNode): md.List => new md.List(md.ListType.Order),
+  'ul': (childNode: ChildNode): md.List => new md.List(md.ListType.UnorderedList),
+  'ol': (childNode: ChildNode): md.List => new md.List(md.ListType.OrderedList),
   'li': (childNode: ChildNode): md.ListItem => new md.ListItem(),
   'checkbox': (childNode: ChildNode): md.Task => new md.Task(DomUtils.hasAttrib(childNode as Element, "checked")),
   'a': (childNode: ChildNode): md.Link => new md.Link((childNode as Element).attribs['href'], (childNode as Element).attribs['title']),
