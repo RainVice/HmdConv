@@ -1,9 +1,11 @@
 {
   "name": "marked",
-  "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "version": "12.0.2",
+  "description": "marked 是一个 JavaScript 编写的全功能 Markdown 解析和编译器",
   "main": "Index.ets",
-  "author": "",
-  "license": "Apache-2.0",
+  "author": "rainvice",
+  keywords: ["markdown"],
+  "repository": "https://gitee.com/MUYS/HmdConv/tree/master/marked",
+  "license": "MIT",
   "dependencies": {}
 }
