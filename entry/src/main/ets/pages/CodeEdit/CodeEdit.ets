@@ -1,6 +1,5 @@
 import measure from '@ohos.measure'
 import { colorMap } from './highlight'
-import font from '@ohos.font'
 import { KeyCode } from '@kit.InputKit'
 
 @Entry
@@ -9,7 +8,7 @@ struct CodeEdit {
   vscroller: Scroller = new Scroller()
   hscroller: Scroller = new Scroller()
   controller: TextAreaController = new TextAreaController()
-  @State @Watch("scroll") text: string = ''
+  @State text: string = ''
   @State fontsize: number = 16
   @State textHight: number = 0
 
@@ -23,7 +22,6 @@ struct CodeEdit {
   build() {
     Column() {
       Scroll(this.vscroller) {
-
         Row({ space: 5 }) {
           Column() {
             ForEach(this.text.split('\n'), (item: string, index: number) => {
@@ -67,26 +65,34 @@ struct CodeEdit {
 
               TextArea({ text: $$this.text, controller: this.controller })
                 .onKeyEvent((event: KeyEvent) => {
-                  if (event.keyCode === KeyCode.KEYCODE_TAB && event.type === KeyType.Down) {
-                    this.text += "    "
-                  } else if (event.keyCode === KeyCode.KEYCODE_ENTER) {
-                    if (this.text.includes('\n')) {
-                      // todo 当前位置的上一行
-                      const arr = this.text.split('\n')
-                      const s = arr[arr.length-2]
-                      const leadingSpaces: number = s.length - s.trimStart().length;
-                      // 在this.text的指定位置插入数据
-                      const caretOffset = this.controller.getCaretOffset().index; // 获取插入位置
-                      let modifiedText = this.text.substring(0, caretOffset) + " ".repeat(leadingSpaces - leadingSpaces % 4) + this.text.substring(caretOffset);
-                      // 更新 this.text
-                      this.text = modifiedText;
-                    }
-                  }
+                  // if (event.keyCode === KeyCode.KEYCODE_TAB && event.type === KeyType.Down) {
+                  //   const index = this.controller.getCaretOffset().index
+                  //   this.text = this.text.slice(0, index) + "    " + this.text.slice(index)
+                  //   this.controller.caretPosition(index+4)
+                  // }
+                  // else if (event.keyCode === KeyCode.KEYCODE_ENTER && event.type === KeyType.Down) {
+                  //   if (this.text.includes('\n')) {
+                  //     // todo 当前位置的上一行
+                  //     const arr = this.text.split('\n')
+                  //     const s = arr[arr.length-2]
+                  //     const leadingSpaces: number = s.length - s.trimStart().length;
+                  //     // 在this.text的指定位置插入数据
+                  //     const caretOffset = this.controller.getCaretOffset().index; // 获取插入位置
+                  //     let modifiedText = this.text.substring(0, caretOffset) + " ".repeat(leadingSpaces - leadingSpaces % 4) + this.text.substring(caretOffset);
+                  //     // 更新 this.text
+                  //     this.text = modifiedText;
+                  //   }
+                  // }
                 })// .padding({ top: 0, bottom: 0, left: 0, right: 5 })
                 .borderRadius(0)
                 .backgroundColor(Color.Transparent)
                 .fontColor(Color.Transparent)
                 .onChange((value: string) => {
+                  const caret = this.controller.getCaretOffset()
+                  this.vscroller.scrollTo({
+                    yOffset: px2vp(caret.y),
+                    xOffset: 0
+                  })
                 })
                 .padding(0)
                 .fontSize(this.fontsize)
@@ -96,7 +102,6 @@ struct CodeEdit {
             .alignContent(Alignment.TopStart)
           }.scrollable(ScrollDirection.Horizontal)
         }.alignItems(VerticalAlign.Top)
-
         // Scroll() {
         //   Stack() {
         //     // 行
@@ -167,25 +172,12 @@ struct CodeEdit {
         // }
         // .width("100%e")
         // .scrollable(ScrollDirection.Horizontal)
-
       }.align(Alignment.TopStart)
-    }.backgroundColor("#2B2B2B")
-    // .height("100%")
+    }
+    .backgroundColor("#2B2B2B")
+    .height("100%")
 
   }
-
-  scroll(){
-    // this.vscroller.scrollEdge(Edge.Bottom)
-    const caret = this.controller.getCaretOffset()
-    // const pos = this.findLineColumn(this.text,caret.index)
-    console.log(JSON.stringify(caret));
-    console.log(px2vp(caret.y).toString());
-    this.vscroller.scrollTo({
-      yOffset: px2vp(caret.y),
-      xOffset: 0
-    })
-  }
-
   findLineColumn(text: string, index: number): Array<number> {
     if (text === "") {
       return [0,0]
