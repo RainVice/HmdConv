@@ -1,6 +1,6 @@
 {
   "name": "@rv/hmd-conv",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "将 html 转换成 markdown 语法",
   "main": "Index.ets",
   "author": "rainvice",
