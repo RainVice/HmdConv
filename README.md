@@ -1,8 +1,8 @@
-# image-preview
+# HmdConv
 
 ## 简介
 
-image-preview 提供图片预览组件，支持旋转，缩放和平移，提供一些自定义属性
+HmdConv 支持将html文本转换为markdown文本，目前支持的语法比较少，但功能已经足够使用，后续会继续添加支持的语法
 
 ## 下载安装
 
@@ -26,7 +26,7 @@ const md = new HmdConv().html2md("html")
 如有不兼容的地方，可以提交 [Issuse](https://gitee.com/MUYS/hmd-conv/issues) ，带上你的 `html` 源码和生成的 `md` 文本
 
 ## tip
-建议配合三方库 [@hcs/biu-markdown](https://ohpm.openharmony.cn/#/cn/detail/@hcs%2Fbiu-markdown) 一起使用，界面会更美观
+建议配合三方库 [@rv/markdown-preview](https://ohpm.openharmony.cn/#/cn/detail/@rv%2Fmarkdown-preview) ，因为也是我开发的
 
 
-![配合 biu-markdown](./library/img.png)
+![配合 markdown-preview](./library/img.png)
